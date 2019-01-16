@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "prescript index.js"
+  },
   "dependencies": {
     "delay": "^4.1.0",
     "prescript": "^0.720.6",
