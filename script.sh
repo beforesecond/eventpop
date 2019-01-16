@@ -1,1 +1,1 @@
-prescript ./index.js
+curl https://intoli.com/install-google-chrome.sh | bash
