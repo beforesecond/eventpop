@@ -37,7 +37,7 @@ step('Go to eventpop.com', () =>
     const config = JSON.parse(
       require('fs').readFileSync('./.login.json', 'utf8')
     )
-    const url = config.pramool
+    const url = config.url
     await retry(async () => {
       await page.goto(url, {
         timeout: 10000
@@ -49,7 +49,6 @@ step('Go to eventpop.com', () =>
 step('click login', () =>
   action(async state => {
     const page = getPage(state)
-    await delay(1000)
     await retry(async () => {
       await page.waitForSelector('a.btn.navbar-btn.open-signin-modal', {
         timeout: 5000,
@@ -66,10 +65,12 @@ step('input login email and password', () => {
     const config = JSON.parse(
       require('fs').readFileSync('./.login.json', 'utf8')
     )
-    await delay(1000)
+    await page.waitForSelector('div#signin-modal', {
+      timeout: 5000,
+      visible: true
+    })
     const email = config.email
     const password = config.password
-    const url = config.pramool
     await page.type('input[id="user_email"]', email)
     await page.type('input[id="user_password"]', password)
     await page.$eval('form#new_user', form => form.submit())
@@ -79,10 +80,16 @@ step('input login email and password', () => {
 step('select ticket and confirm.', () => {
   action(async state => {
     const page = getPage(state)
-    await delay(1000)
+    await page.waitForSelector('form#place-order', {
+      timeout: 5000,
+      visible: true
+    })
     await page.select('select', '1')
     await page.$eval('form#place-order', form => form.submit())
-    await delay(1000)
+    await page.waitForSelector('button#confirm', {
+      timeout: 5000,
+      visible: true
+    })
     await page.click('button#confirm')
   })
 })
