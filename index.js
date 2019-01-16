@@ -1,0 +1,97 @@
+const puppeteer = require('puppeteer')
+const { step, action, pending } = require('prescript')
+const delay = require('delay')
+
+function getPage(state) {
+  /** @type {import('puppeteer').Page} */
+  const page = state.page
+  return page
+}
+
+async function retry(f, n = 3) {
+  let error
+  for (let i = 0; i < n; i++) {
+    try {
+      return await f()
+    } catch (e) {
+      error = e
+    }
+  }
+  throw error
+}
+
+step('Open browser', () =>
+  action(async state => {
+    state.browser = await puppeteer.launch({
+      headless: false,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
+  })
+)
+
+step('Go to eventpop.com', () =>
+  action(async state => {
+    /** @type {import('puppeteer').Browser} */
+    const browser = state.browser
+    const page = await browser.newPage()
+    const config = JSON.parse(
+      require('fs').readFileSync('./.login.json', 'utf8')
+    )
+    const url = config.pramool
+    await retry(async () => {
+      await page.goto(url, {
+        timeout: 10000
+      })
+      state.page = page
+    })
+  })
+)
+step('click login', () =>
+  action(async state => {
+    const page = getPage(state)
+    await delay(1000)
+    await retry(async () => {
+      await page.waitForSelector('a.btn.navbar-btn.open-signin-modal', {
+        timeout: 5000,
+        visible: true
+      })
+      await page.click('a.btn.navbar-btn.open-signin-modal')
+    })
+  })
+)
+
+step('input login email and password', () => {
+  action(async state => {
+    const page = getPage(state)
+    const config = JSON.parse(
+      require('fs').readFileSync('./.login.json', 'utf8')
+    )
+    await delay(1000)
+    const email = config.email
+    const password = config.password
+    const url = config.pramool
+    await page.type('input[id="user_email"]', email)
+    await page.type('input[id="user_password"]', password)
+    await page.$eval('form#new_user', form => form.submit())
+  })
+})
+
+step('select ticket and confirm.', () => {
+  action(async state => {
+    const page = getPage(state)
+    await delay(1000)
+    await page.select('select', '1')
+    await page.$eval('form#place-order', form => form.submit())
+    await delay(1000)
+    await page.click('button#confirm')
+  })
+})
+
+step('Close browser', () =>
+  action(async state => {
+    await delay(3000)
+    /** @type {import('puppeteer').Browser} */
+    const browser = state.browser
+    browser.close()
+  })
+)
