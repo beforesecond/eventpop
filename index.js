@@ -80,15 +80,19 @@ step('input login email and password', () => {
 step('select ticket and confirm.', () => {
   action(async state => {
     const page = getPage(state)
-    await page.waitForSelector('form#place-order', {
-      timeout: 5000,
-      visible: true
+    await retry(async () => {
+      await page.waitForSelector('form#place-order', {
+        timeout: 5000,
+        visible: true
+      })
     })
     await page.select('select', '1')
     await page.$eval('form#place-order', form => form.submit())
-    await page.waitForSelector('button#confirm', {
-      timeout: 5000,
-      visible: true
+    await retry(async () => {
+      await page.waitForSelector('button#confirm', {
+        timeout: 5000,
+        visible: true
+      })
     })
     await page.click('button#confirm')
   })
