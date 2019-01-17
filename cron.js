@@ -1,6 +1,6 @@
 var cron = require('node-cron')
 
-cron.schedule('* * * * *', function() {
+cron.schedule('* * * * * *', function() {
   console.log('running a task every second')
 
   const { exec } = require('child_process')
