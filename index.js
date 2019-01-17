@@ -23,7 +23,7 @@ async function retry(f, n = 3) {
 step('Open browser', () =>
   action(async state => {
     state.browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
   })
@@ -49,13 +49,17 @@ step('Go to eventpop.com', () =>
 step('click login', () =>
   action(async state => {
     const page = getPage(state)
-    await retry(async () => {
-      await page.waitForSelector('a.btn.navbar-btn.open-signin-modal', {
-        timeout: 5000,
-        visible: true
+    try {
+      await retry(async () => {
+        await page.waitForSelector('a.btn.navbar-btn.open-signin-modal', {
+          timeout: 5000,
+          visible: true
+        })
+        await page.click('a.btn.navbar-btn.open-signin-modal')
       })
-      await page.click('a.btn.navbar-btn.open-signin-modal')
-    })
+    } catch (e) {
+      console.log(e)
+    }
   })
 )
 
@@ -86,15 +90,21 @@ step('select ticket and confirm.', () => {
         visible: true
       })
     })
-    await page.select('select', '1')
-    await page.$eval('form#place-order', form => form.submit())
-    await retry(async () => {
-      await page.waitForSelector('button#confirm', {
-        timeout: 5000,
-        visible: true
+    try {
+      await page.select('select', '1')
+      await page.$eval('form#place-order', form => form.submit())
+      await retry(async () => {
+        await page.waitForSelector('button#confirm', {
+          timeout: 5000,
+          visible: true
+        })
       })
-    })
-    await page.click('button#confirm')
+      await page.click('button#confirm')
+      await page.click('button#confirm')
+      await page.click('button#confirm')
+    } catch (e) {
+      console.log(e)
+    }
   })
 })
 
