@@ -23,7 +23,7 @@ async function retry(f, n = 3) {
 step('Open browser', () =>
   action(async state => {
     state.browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
   })
