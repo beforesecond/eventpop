@@ -6,6 +6,7 @@ cron.schedule('* * * * * *', function() {
   const { exec } = require('child_process')
   exec('npm run start', (err, stdout, stderr) => {
     if (err) {
+      console.log(err)
       // node couldn't execute the command
       return
     }
