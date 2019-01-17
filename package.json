@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "prescript index.js",
+    "rotate": "node cron.js",
     "install:chrome": "curl https://intoli.com/install-google-chrome.sh | bash"
   },
   "dependencies": {
