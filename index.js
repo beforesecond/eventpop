@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer')
 const { step, action, pending } = require('prescript')
 const delay = require('delay')
+const config = JSON.parse(require('fs').readFileSync('./.login.json', 'utf8'))
 
 function getPage(state) {
   /** @type {import('puppeteer').Page} */
@@ -23,7 +24,7 @@ async function retry(f, n = 3) {
 step('Open browser', () =>
   action(async state => {
     state.browser = await puppeteer.launch({
-      headless: true,
+      headless: config.headless,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
   })
@@ -34,9 +35,6 @@ step('Go to eventpop.com', () =>
     /** @type {import('puppeteer').Browser} */
     const browser = state.browser
     const page = await browser.newPage()
-    const config = JSON.parse(
-      require('fs').readFileSync('./.login.json', 'utf8')
-    )
     const url = config.url
     await retry(async () => {
       await page.goto(url, {
@@ -66,9 +64,6 @@ step('click login', () =>
 step('input login email and password', () => {
   action(async state => {
     const page = getPage(state)
-    const config = JSON.parse(
-      require('fs').readFileSync('./.login.json', 'utf8')
-    )
     await page.waitForSelector('div#signin-modal', {
       timeout: 5000,
       visible: true

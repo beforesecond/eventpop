@@ -1,11 +1,11 @@
 var cron = require('node-cron')
 var moment = require('moment')
 
-var time1 = moment().unix()
-var time2 = moment('2019-01-17 17:55:00').unix()
-var time3 = moment('2019-01-17 18:05:00').unix()
+var time2 = moment('2019-08-16 11:59:00').unix()
+var time3 = moment('2019-08-16 12:01:00').unix()
 
-cron.schedule('* * * * * *', function() {
+cron.schedule('*/10 * * * * *', function() {
+  var time1 = moment().unix()
   if (time1 >= time2 && time1 <= time3) {
     console.log('running a task every second')
 
